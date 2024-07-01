@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>@晓敏</title>
+<style type="text/css">
+    body { margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; perspective: 600px;background-color: black; }
+    #canvas {width: 100vw;height: 100vh;}
+    .cube { position: absolute; width: 300px; transform-style: preserve-3d; animation: rotate 5s infinite linear;top: 30%;}
+    .face { position: absolute; width: 300px; height: 300px; opacity:0.8; border: 1px solid #ccc;transition: transform 0.7s ease-in-out;background-size: 100% 100%;}
+    /* .face::after {content: '';position: absolute;top: 0;left: 0;right: 0;bottom: 0;background: rgba(255, 255, 255, 0.5);z-index: -1;} */
+    .front  { transform: translateZ(150px);background-image: url(./img/1.jpg); }
+    .back   { transform: rotateY(180deg) translateZ(150px);background-image: url(./img/2.jpg);}
+    .right  { transform: rotateY(90deg) translateZ(150px); background-image: url(./img/3.jpg);}
+    .left   { transform: rotateY(-90deg) translateZ(150px); background-image: url(./img/7.jpg);}
+    .top    { transform: rotateX(90deg) translateZ(150px); background-image: url(./img/5.jpg);}
+    .bottom { transform: rotateX(-90deg) translateZ(150px); background-image: url(./img/4.jpg);}
+    .small {position: absolute; width: 120px; height: 120px; border: 1px solid #ccc;top: 90px;left: 90px;background-size: 100% 100%;}
+    .sfront  { transform: translateZ(60px);background-image: url(./img/6.jpg); }
+    .sback   { transform: rotateY(180deg) translateZ(60px);background-image: url(./img/8.jpg);}
+    .sright  { transform: rotateY(90deg) translateZ(60px); background-image: url(./img/9.jpg);}
+    .sleft   { transform: rotateY(-90deg) translateZ(60px); background-image: url(./img/10.jpg);}
+    .stop    { transform: rotateX(90deg) translateZ(60px); background-image: url(./img/11.jpg);}
+    .sbottom { transform: rotateX(-90deg) translateZ(60px); background-image: url(./img/12.jpg);}
+    .cube:hover .front  { transform: translateZ(251px); }
+    .cube:hover .back   { transform: rotateY(180deg) translateZ(251px); }
+    .cube:hover .right  { transform: rotateY(90deg) translateZ(251px); }
+    .cube:hover .left   { transform: rotateY(-90deg) translateZ(251px); }
+    .cube:hover .top    { transform: rotateX(90deg) translateZ(251px); }
+    .cube:hover .bottom { transform: rotateX(-90deg) translateZ(251px); }
+	
+    /* @keyframes rotate { from { transform: rotateX(0) rotateY(0); } to { transform: rotateX(360deg) rotateY(360deg); } } */
+</style> 
+</head>
+<body>
+	<audio autoplay loop controls id="audio_c"><source src="tiantian/tain.mp3" type="audio/mpeg"></audio>
+    <div class="cube">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+        <div class="small sfront"></div>
+        <div class="small sback"></div>
+        <div class="small sright"></div>
+        <div class="small sleft"></div>
+        <div class="small stop"></div>
+        <div class="small sbottom"></div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <script>
+        // // 获取立方体元素
+        // var cube = document.querySelector('.cube');
+
+        // // 监听鼠标移动事件来旋转立方体
+        // document.addEventListener('mousemove', function(e) {
+        // var x = e.clientX;
+        // var y = e.clientY;
+        
+        // // 计算旋转角度
+        // var rotateX = (y - window.innerHeight / 2) / 20;
+        // var rotateY = (x - window.innerWidth / 2) / 20;
+
+        // // 应用旋转到立方体
+        // cube.style.transform = 'rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+        // });
+
+        // 获取立方体元素
+        var cube = document.querySelector('.cube');
+		var audio_c = document.querySelector('#audio_c');
+
+        // 设置旋转方向，默认为顺时针
+        var direction = 4; //旋转速度
+
+        // 设置初始旋转角度
+        var rotateY = 0;
+
+        // 设置一个定时器，每隔一段时间就更新立方体的旋转角度
+        var intervalId = setInterval(function() {
+        // 根据旋转方向更新角度
+        rotateY += direction;
+
+        // 应用新的旋转角度到立方体
+        cube.style.transform = 'rotateY(' + rotateY + 'deg)';
+        }, 100);
+
+        // 监听立方体的点击事件来切换旋转方向
+        cube.addEventListener('click', function() {
+        // 切换旋转方向
+        direction *= -1;     // 1 表示顺时针，-1 表示逆时针
+		audio_c.play();
+        });
+
+        const windowWidth = document.body.offsetWidth
+        const windowHeight = document.body.offsetHeight
+        const canvasDom = document.getElementById("canvas")
+        canvasDom.height = windowHeight
+        canvasDom.width = windowWidth
+        const ctx = canvasDom.getContext("2d")
+        
+        function random(a,b){
+            return Math.random()*(b - a)+a
+        }
+        class petals{
+            constructor(data){
+                    this.width=data.width
+                    this.height=data.height
+                    this.speedX=data.speedX
+                    this.speedY=data.speedY
+
+                    this.x=data.x
+                    this.y=data.y
+
+                    this.img=new Image()
+                    this.img.src=data.src
+
+                    this.dir = true
+                    this.num = 0
+            }
+            draw(index)
+            {
+                this.y += this.speedY
+                if(this.y>windowHeight)
+                {
+                    petalArr.splice(index,1)
+                }
+                
+                this.num++
+                if(this.num > 60)
+                {
+                    this.num = 0
+                    this.dir = !this.dir
+                }
+
+                if(this.dir)
+                    this.x -= this.speedX
+                else
+                    this.x += this.speedX
+                
+                ctx.drawImage(this.img,this.x,this.y,this.width,this.height)
+            }
+        }
+        const petalArr=[]
+        function rander(){
+            ctx.clearRect(0,0,windowWidth,windowHeight)
+            petalArr.forEach((petal,index) =>{
+                petal.draw(index)
+            })
+            
+        }
+        function add(){
+            const width=random(10.1,55)
+            petalArr.push(new petals({
+            width:width,
+            height:186*width/365,
+            src:'./img/petal.png',
+            speedX:random(0.3,2.0),
+            speedY:random(3.5,6.5),
+            x:random(0,windowWidth),
+            y:0
+        }))
+        }
+        setInterval(rander,50)
+        setInterval(add,200)
+		 
+    </script>
+</body>
+</html>
